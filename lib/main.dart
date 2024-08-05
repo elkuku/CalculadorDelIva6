@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   runApp(const MyApp());
@@ -14,9 +15,12 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Calculador del IVA',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
-        useMaterial3: true,
+        brightness: Brightness.light,
       ),
+      darkTheme: ThemeData(
+        brightness: Brightness.dark,
+      ),
+      themeMode: ThemeMode.system,
       home: const MyHomePage(title: 'Calculador del IVA'),
     );
   }
@@ -36,6 +40,31 @@ class _MyHomePageState extends State<MyHomePage> {
   double _tax = 0;
   final _textController = TextEditingController();
 
+  int _taxValue = 0;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _loadPreferences();
+  }
+
+  @override
+  void dispose() {
+    _textController.dispose();
+
+    super.dispose();
+  }
+
+  _loadPreferences() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _taxValue = prefs.getInt('taxValue') ?? 0;
+    });
+
+    return prefs;
+  }
+
   void _clear() {
     _textController.text = "";
     setState(() {
@@ -45,7 +74,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _updateResults() {
-    var taxPercent = 12;
+    var taxPercent = _taxValue;
     var taxRate = 1 + taxPercent / 100;
 
     double? total = 0.0;
@@ -59,7 +88,7 @@ class _MyHomePageState extends State<MyHomePage> {
       }
     }
     setState(
-          () {
+      () {
         _tax = tax;
         _withoutTax = withoutTax;
       },
@@ -71,13 +100,12 @@ class _MyHomePageState extends State<MyHomePage> {
     TextStyle ts = const TextStyle(
         fontFamily: "monospace",
         fontFamilyFallback: <String>["Courier"],
-        fontSize: 27,
-        color: Colors.blueAccent
-    );
+        fontSize: 32,
+        color: Colors.greenAccent);
     TextStyle ts2 = const TextStyle(
       fontFamily: "monospace",
       fontFamilyFallback: <String>["Courier"],
-      fontSize: 27,
+      fontSize: 32,
     );
     return Scaffold(
       appBar: AppBar(
@@ -87,14 +115,27 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Column(
         children: <Widget>[
           Row(
+            children: [
+              ElevatedButton(
+                child: const Text('Settings'),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const Settings()),
+                  ).then((value) async {
+                    await _loadPreferences();
+                    _updateResults();
+                  });
+                },
+              ),
+            ],
+          ),
+          Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
                 DateFormat('d - M - yyyy').format(DateTime.now()),
-                style: const TextStyle(
-                    color: Colors.blue,
-                    fontSize: 24
-                ),
+                style: const TextStyle(color: Colors.green, fontSize: 36),
               ),
             ],
           ),
@@ -111,7 +152,7 @@ class _MyHomePageState extends State<MyHomePage> {
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              const Text('IVA'),
+              Text('IVA ${_taxValue.toString()} %'),
               Text(
                 _tax.toStringAsFixed(2),
                 style: ts,
@@ -139,10 +180,90 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
     );
   }
+}
+
+class _SettingsState extends State<Settings> {
+  int _taxValue = 0;
 
   @override
-  void dispose() {
-    _textController.dispose();
-    super.dispose();
+  void initState() {
+    super.initState();
+    _loadPreferences();
+  }
+
+  void _loadPreferences() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _taxValue = prefs.getInt('taxValue') ?? 0;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        leading: BackButton(
+          color: Colors.greenAccent,
+          onPressed: () async {
+            final prefs = await SharedPreferences.getInstance();
+            prefs.setInt('taxValue', _taxValue);
+            Navigator.of(context).pop();
+          },
+        ),
+        title: const Text('Setings'),
+      ),
+      body: Center(
+        child: TextField(
+          inputFormatters: <TextInputFormatter>[
+            FilteringTextInputFormatter.digitsOnly
+          ],
+          keyboardType: TextInputType.number,
+          onChanged: (value) {
+            if (value == "") {
+              return;
+            }
+            _taxValue = int.parse(value);
+          },
+          controller: TextEditingController(text: _taxValue.toString()),
+        ),
+      ),
+    );
   }
 }
+
+class Settings extends StatefulWidget {
+  const Settings({super.key});
+
+  @override
+  _SettingsState createState() => _SettingsState();
+}
+/*
+  Settings({super.key});
+
+  int _taxValue = 0;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        leading: BackButton(
+          color: Colors.blueAccent,
+          onPressed: () async {
+            print('GG');
+            final prefs = await SharedPreferences.getInstance();
+            prefs.setInt('taxValue', _taxValue);
+            Navigator.of(context).pop();
+          },
+        ),
+        title: const Text('Setings'),
+      ),
+      body: Center(
+        child: TextField(
+
+        ),
+      ),
+    );
+  }
+
+}
+*/
