@@ -117,7 +117,7 @@ class _MyHomePageState extends State<MyHomePage> {
           Row(
             children: [
               ElevatedButton(
-                child: const Text('Settings'),
+                child: const Icon(Icons.settings),
                 onPressed: () {
                   Navigator.push(
                     context,
@@ -163,7 +163,8 @@ class _MyHomePageState extends State<MyHomePage> {
             textAlign: TextAlign.end,
             style: ts2,
             controller: _textController,
-            decoration: const InputDecoration(hintText: 'Total'),
+            decoration:
+                const InputDecoration(labelText: 'Total', hintText: 'Total'),
             keyboardType: TextInputType.number,
             inputFormatters: <TextInputFormatter>[
               //FilteringTextInputFormatter.digitsOnly
@@ -212,20 +213,26 @@ class _SettingsState extends State<Settings> {
         ),
         title: const Text('Setings'),
       ),
-      body: Center(
-        child: TextField(
-          inputFormatters: <TextInputFormatter>[
-            FilteringTextInputFormatter.digitsOnly
-          ],
-          keyboardType: TextInputType.number,
-          onChanged: (value) {
-            if (value == "") {
-              return;
-            }
-            _taxValue = int.parse(value);
-          },
-          controller: TextEditingController(text: _taxValue.toString()),
-        ),
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+            child: TextField(
+              decoration: const InputDecoration(labelText: 'Tax Value'),
+              inputFormatters: <TextInputFormatter>[
+                FilteringTextInputFormatter.digitsOnly
+              ],
+              keyboardType: TextInputType.number,
+              onChanged: (value) {
+                if (value == "") {
+                  return;
+                }
+                _taxValue = int.parse(value);
+              },
+              controller: TextEditingController(text: _taxValue.toString()),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -237,33 +244,3 @@ class Settings extends StatefulWidget {
   @override
   _SettingsState createState() => _SettingsState();
 }
-/*
-  Settings({super.key});
-
-  int _taxValue = 0;
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        leading: BackButton(
-          color: Colors.blueAccent,
-          onPressed: () async {
-            print('GG');
-            final prefs = await SharedPreferences.getInstance();
-            prefs.setInt('taxValue', _taxValue);
-            Navigator.of(context).pop();
-          },
-        ),
-        title: const Text('Setings'),
-      ),
-      body: Center(
-        child: TextField(
-
-        ),
-      ),
-    );
-  }
-
-}
-*/
