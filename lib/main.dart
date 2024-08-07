@@ -109,27 +109,27 @@ class _MyHomePageState extends State<MyHomePage> {
     );
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        backgroundColor: Colors.white24,
         title: Text(widget.title),
+        actions: [
+          IconButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const Settings(),
+                ),
+              ).then((value) async {
+                await _loadPreferences();
+                _updateResults();
+              });
+            },
+            icon: const Icon(Icons.settings),
+          ),
+        ],
       ),
       body: Column(
         children: <Widget>[
-          Row(
-            children: [
-              ElevatedButton(
-                child: const Icon(Icons.settings),
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const Settings()),
-                  ).then((value) async {
-                    await _loadPreferences();
-                    _updateResults();
-                  });
-                },
-              ),
-            ],
-          ),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -175,6 +175,7 @@ class _MyHomePageState extends State<MyHomePage> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
+        backgroundColor: Colors.white24,
         onPressed: _clear,
         tooltip: 'Clear',
         child: const Icon(Icons.restore_from_trash),
