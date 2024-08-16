@@ -74,45 +74,26 @@ class _CalculadorState extends State<Calculador> {
 
   @override
   Widget build(BuildContext context) {
-    TextStyle ts = const TextStyle(
-        fontFamily: "monospace",
-        fontFamilyFallback: <String>["Courier"],
-        fontSize: 32,
-        color: Colors.greenAccent);
-    TextStyle ts2 = const TextStyle(
+    TextStyle bigNumbers = const TextStyle(
       fontFamily: "monospace",
       fontFamilyFallback: <String>["Courier"],
       fontSize: 32,
     );
+    TextStyle bigNumbersGreen = bigNumbers.copyWith(
+      color: Colors.greenAccent,
+    );
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.white24,
         title: Text(widget.title),
         actions: [
           IconButton(
             onPressed: () {
-              print('opei');
               showModalBottomSheet(
-                  context: context,
-                  builder: (ctx) {
-                    return const Settings();
-//                    return Text('HEY');
-                  }).then((onValue) async {
-                print('SAving...');
-                await _loadPreferences();
-                _updateResults();
-              });
-            },
-            icon: const Icon(Icons.add),
-          ),
-          IconButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const Settings(),
-                ),
-              ).then((value) async {
+                context: context,
+                builder: (ctx) {
+                  return const Settings();
+                },
+              ).then((onValue) async {
                 await _loadPreferences();
                 _updateResults();
               });
@@ -148,7 +129,7 @@ class _CalculadorState extends State<Calculador> {
                 child: Text(
                   _withoutTax.toStringAsFixed(2),
                   textAlign: TextAlign.end,
-                  style: ts,
+                  style: bigNumbersGreen,
                 ),
               ),
             ],
@@ -167,7 +148,7 @@ class _CalculadorState extends State<Calculador> {
                 child: Text(
                   _tax.toStringAsFixed(2),
                   textAlign: TextAlign.end,
-                  style: ts,
+                  style: bigNumbersGreen,
                 ),
               ),
             ],
@@ -175,7 +156,7 @@ class _CalculadorState extends State<Calculador> {
           const Divider(),
           TextField(
             textAlign: TextAlign.end,
-            style: ts2,
+            style: bigNumbers,
             controller: _textController,
             decoration: const InputDecoration(
               labelText: 'Total',
@@ -194,7 +175,7 @@ class _CalculadorState extends State<Calculador> {
         backgroundColor: Colors.white24,
         onPressed: _clear,
         tooltip: 'Clear',
-        child: const Icon(Icons.restore_from_trash),
+        child: const Icon(Icons.clear),
       ),
     );
   }

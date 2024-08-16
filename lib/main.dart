@@ -1,25 +1,34 @@
 import 'package:calculador_del_iva_6/calculador.dart';
 import 'package:flutter/material.dart';
 
+var kColorScheme = ColorScheme.fromSeed(
+  seedColor: Colors.green,
+);
+var kDarkColorScheme = ColorScheme.fromSeed(
+  seedColor: Colors.green,
+  brightness: Brightness.dark,
+);
+
 void main() {
-  runApp(const MainWidget());
-}
-
-class MainWidget extends StatelessWidget {
-  const MainWidget({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
+  runApp(
+    MaterialApp(
       title: 'Calculador del IVA',
-      theme: ThemeData(
-        brightness: Brightness.light,
+      theme: ThemeData().copyWith(
+        colorScheme: kColorScheme,
+        appBarTheme: const AppBarTheme().copyWith(
+          foregroundColor: kColorScheme.onPrimaryContainer,
+          backgroundColor: kColorScheme.primaryContainer,
+        ),
       ),
-      darkTheme: ThemeData(
-        brightness: Brightness.dark,
+      darkTheme: ThemeData.dark().copyWith(
+        colorScheme: kDarkColorScheme,
+        appBarTheme: const AppBarTheme().copyWith(
+          foregroundColor: kDarkColorScheme.onPrimaryContainer,
+          backgroundColor: kDarkColorScheme.primaryContainer,
+        ),
       ),
       themeMode: ThemeMode.system,
       home: const Calculador(title: 'Calculador del IVA'),
-    );
-  }
+    ),
+  );
 }
